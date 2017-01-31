@@ -1,5 +1,12 @@
 {% extends "bootstrap/base.html" %}
 
+{% block styles %}
+{{super()}}
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='custom.css') }}">
+<link rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Source+Code+Pro:400,900" >
+{% endblock %}
 
 {% block title %}CommandList{% endblock %}
 

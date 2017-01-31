@@ -1,29 +1,36 @@
 {% extends "base.html" %}
+
 {% block page_content %}
-    <h2>To Do List</h2>
-    {% if tasks|length == 0 %}
-      Your todo list is empty.
-    {% else %}
-      Your current todo list is:
-      <ol>
-      {% for task in tasks %}
-        <li> {{ task[1] }}
-      {% endfor %}
-      </ol>
-    {% endif %}
-    </br></br>
-    {% if bucket == 1 %}
-      There is one more task in your bucket.
-    {% elif bucket > 1 %}
-      There are {{ bucket }} additional tasks in your bucket.
-    {% else %}
-      Your bucket is empty.
-    {% endif %}
-    </br></br>
-    Add, clear or revise a task, or start fresh:
-    <form action="{{ url_for('get_next_action') }}" method="post" class="add-pitch">
-        <input class="task" type="text" maxlength="80" name="next_action" autofocus>  <button type="submit">+</button>
-    </form>
-    </br>
-     Need some help? View a list of commands <a href="{{ url_for('how_to') }}">here</a>.
+    <div class="page-header">
+        <h1>_>List</h1>
+    </div>
+    <div>
+        {% if tasks|length == 0 %}
+            <h2>Your todo list is empty.</h2>
+        {% else %}
+            <h2>Your current todo list is:</h2>
+            <ol>
+            {% for task in tasks %}
+                <li><p>{{ task[1] }}</p></li>
+            {% endfor %}
+            </ol>
+        {% endif %}
+        {% if bucket == 1 %}
+            <h2>There is one more task in your bucket.</h2>
+        {% elif bucket > 1 %}
+            <h2>There are {{ bucket }} additional tasks in your bucket.</h2>
+        {% else %}
+            <h2>Your bucket is empty.</h2>
+        {% endif %}
+    </div>
+    <div class="task-form">
+        <p>Add, clear or revise a task, or start fresh:</p>
+        <form action="{{ url_for('get_next_action') }}" method="post">
+            <input class="task" type="text" maxlength="80" name="next_action" autofocus>  <button class="task-button" type="submit">+</button>
+        </form>
+    </div>
+    <div>
+      <p>Need some help? View a list of commands <a href="{{ url_for('how_to') }}">here</a>.</p>
+    </div>
+
 {% endblock %}
