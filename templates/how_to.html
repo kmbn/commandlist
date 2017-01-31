@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+    <div class="page-header">
+        <h1>_>How-To</h1>
+    </div>
+    <div>
+        <h2>Use the following commands:</h2>
+        <ol>
+            <li><p>Add a task: just type it and press enter</p></li>
+            <li><p>Delete a task: type c and its number (i.e., c2)</p></li>
+            <li><p>Revise a task: type rev, its number, and the new task</p></li>
+            <li><p>(i.e., 'rev3 Clarify how to revise a task')</p></li>
+            <li><p>Start from scratch: type reset list</p></li>
+        </ol>
+        <h2>Extras tasks go in the bucket.</h2>
+    </div>
+    <div class="task-form">
+        <p>Type 'back' to go back to your list:</p>
+        <form action="{{ url_for('get_next_action') }}" method="post">
+            <input class="task" type="text" maxlength="80" name="next_action" autofocus>  <button class="task-button" type="submit">+</button>
+        </form>
+    </div>
+    <div>
+      <p>You can also click <a href="{{ url_for('main_view') }}">here</a> to return to your list.</p>
+    </div>
+
+{% endblock %}

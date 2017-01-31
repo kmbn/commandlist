@@ -110,7 +110,9 @@ def get_next_action():
             flash('You can only revise tasks 1-%d.' % (limit))
             return redirect(url_for('main_view'))
     elif next_action == 'Help':
-        return redirect(url_for('help'))
+        return redirect(url_for('how_to'))
+    elif next_action == 'Back' or next_action == "'back'":
+        return redirect(url_for('main_view'))
     else:
         return check_task()
 
@@ -181,10 +183,6 @@ def revise():
 @app.route('/how_to')
 def how_to():
     return render_template('how_to.html')
-
-@app.route('/about')
-def about():
-    return render_template('about.html')
 
 
 # ERROR HANDLERS
