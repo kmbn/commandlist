@@ -1,6 +1,6 @@
 '''
     CommandList:
-    A browser-based command line todo list built with Flask and sqlite3.
+    A browser-based modeless todo list built with Python3, Flask and sqlite3.
 '''
 
 import os
@@ -10,7 +10,7 @@ from flask import Flask, request, session, g, redirect, url_for, abort, \
 from datetime import datetime
 from flask_bootstrap import Bootstrap
 
-
+# CONFIGURE
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
 
@@ -20,21 +20,22 @@ app.config.update(dict(
     DATABASE=os.path.join(app.root_path, 'commandlist.db')
     ))
 
-
+# Set SECRET_KEY in environment
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or 'secret_key'
+# ==============================================================
 
 
+# DATABASE
 def connect_db():
-    '''Connects to the specific database.'''
+    '''Connect to the given database.'''
     rv = sqlite3.connect(app.config['DATABASE'])
     rv.row_factory = sqlite3.Row
     return rv
 
 
 def get_db():
-    '''Opens a new database connection if there is none yet for the
-    current application context.
-    '''
+    '''Open a new database connection if there is none yet for the
+    current application context.'''
     if not hasattr(g, 'sqlite_db'):
         g.sqlite_db = connect_db()
     return g.sqlite_db
@@ -42,14 +43,16 @@ def get_db():
 
 @app.teardown_appcontext
 def close_db(error):
-    '''Closes the database again at the end of the request.'''
+    '''Close the database again at the end of the request.'''
     if hasattr(g, 'sqlite_db'):
         g.sqlite_db.close()
+# ============================================================================
 
 
 # MAIN APP VIEWS AND LOGIC
 @app.route('/')
 def main_view():
+    '''Fetch the current user's tasks and calculate the size of the bucket.'''
     current_user = 1
     db = get_db()
     cur = db.execute('select id, description from tasks where creator_id = ? \
@@ -61,10 +64,10 @@ def main_view():
         task_ids = []
         for row in tasks:
             task_ids.append(row[0])
-    missing_rows = []
+    missing_rows = [] # Create placeholders for formatting based on five items
     for i in range(5 - len(tasks)):
         missing_rows.append('item')
-    limit = len(tasks)
+    limit = len(tasks) # Necessary for parsing input in get_next_action
     session['limit'] = limit
     session['tasks'] = task_ids
     db = get_db()
@@ -80,6 +83,17 @@ def main_view():
 
 @app.route('/get_next_action', methods=['GET', 'POST'])
 def get_next_action():
+    '''Parse the input and either:
+    1. Create a new task (anything that isn't a command)
+    2. Delete a task on the list (e.g., 'c2' will delete task number 2)
+    3. Revise a task on the list (e.g., 'rev3 New task' will replace
+    the old conten of task number 3 with 'New task')
+    4. Wipe the list and start over ('reset list')
+    5. Redirect the user to a different page (e.g., 'help' will redirect
+    to the how-to page; 'back' will redirect to the homepage)
+
+    The limit is used ensure that a user is referring to an actual position
+    on the task list.'''
     limit = session.get('limit')
     next_action = request.form['next_action']
     if len(next_action) == 0:
@@ -118,6 +132,7 @@ def get_next_action():
 
 
 def check_task():
+    '''Verify that the task is not a duplicate.'''
     next_action = session.get('next_action')
     db = get_db()
     cur = db.execute('select description from tasks where description = ?', \
@@ -131,6 +146,7 @@ def check_task():
 
 
 def add_task():
+    '''Add the task to the task table.'''
     next_action = session.get('next_action')
     current_user = 1
     current_time = datetime.utcnow()
@@ -143,6 +159,7 @@ def add_task():
 
 
 def clear_task():
+    '''Delete the task from the task table.'''
     next_action = session.get('next_action')
     tasks = session.get('tasks')
     task_number = int(next_action[1])
@@ -155,6 +172,7 @@ def clear_task():
 
 
 def restart():
+    '''Erase all tasks for the given user and start a fresh list.'''
     current_user = 1
     db = get_db()
     db.execute('delete from tasks where creator_id = ?', (current_user,))
@@ -164,6 +182,9 @@ def restart():
 
 
 def revise():
+    '''Revise the given task (indicated by index[3] of the input).
+    All text from index[5] onward is considered to be the new content
+    of the task.'''
     next_action = session.get('next_action')
     tasks = session.get('tasks')
     if len(next_action) > 5:
@@ -183,6 +204,7 @@ def revise():
 @app.route('/how_to')
 def how_to():
     return render_template('how_to.html')
+# ============================================================================
 
 
 # ERROR HANDLERS
@@ -194,9 +216,9 @@ def page_not_found(e):
 @app.errorhandler(500)
 def page_not_found(e):
     return render_template('500.html'), 500
-# ==============================================================
+# ============================================================================
 
 # RUN APP
 if __name__ == '__main__':
     app.run(debug=True)
-# ==============================================================
+# ============================================================================
