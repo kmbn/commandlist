@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block page_content %}
+    <h2>To Do List</h2>
+    {% if tasks|length == 0 %}
+      Your todo list is empty.
+    {% else %}
+      Your current todo list is:
+      <ol>
+      {% for task in tasks %}
+        <li> {{ task[1] }}
+      {% endfor %}
+      </ol>
+    {% endif %}
+    </br></br>
+    {% if bucket == 1 %}
+      There is one more task in your bucket.
+    {% elif bucket > 1 %}
+      There are {{ bucket }} additional tasks in your bucket.
+    {% else %}
+      Your bucket is empty.
+    {% endif %}
+    </br></br>
+    Add, clear or revise a task, or start fresh:
+    <form action="{{ url_for('get_next_action') }}" method="post" class="add-pitch">
+        <input class="task" type="text" maxlength="80" name="next_action" autofocus>  <button type="submit">+</button>
+    </form>
+    </br>
+     Need some help? View a list of commands <a href="{{ url_for('how_to') }}">here</a>.
+{% endblock %}

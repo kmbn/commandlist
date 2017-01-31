@@ -8,9 +8,11 @@ from sqlite3 import dbapi2 as sqlite3
 from flask import Flask, request, session, g, redirect, url_for, abort, \
                   render_template, flash
 from datetime import datetime
+from flask_bootstrap import Bootstrap
 
 
 app = Flask(__name__)
+bootstrap = Bootstrap(app)
 
 
 # Load default config and override config from an environment variable
@@ -172,9 +174,13 @@ def revise():
         return redirect(url_for('main_view'))
 
 
-@app.route('/help')
-def show_help():
-    return render_template('help.html')
+@app.route('/how_to')
+def how_to():
+    return render_template('how_to.html')
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
 
 
 # ERROR HANDLERS
