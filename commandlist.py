@@ -94,6 +94,8 @@ def get_next_action():
 
     The limit is used ensure that a user is referring to an actual position
     on the task list.'''
+    if request.method != 'POST':
+        return redirect(url_for('main_view'))
     limit = session.get('limit')
     next_action = request.form['next_action']
     if len(next_action) == 0:
