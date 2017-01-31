@@ -14,6 +14,13 @@
                 <li><p>{{ task[1] }}</p></li>
             {% endfor %}
             </ol>
+            {% if missing_rows|length != 0 %}
+                <ol class="hidden-list">
+                {% for row in missing_rows %}
+                    <li><p>{{ row }}</p></li>
+                {% endfor %}
+                </ol>
+            {% endif %}
         {% endif %}
         {% if bucket == 1 %}
             <h2>There is one more task in your bucket.</h2>

@@ -61,6 +61,9 @@ def main_view():
         task_ids = []
         for row in tasks:
             task_ids.append(row[0])
+    missing_rows = []
+    for i in range(5 - len(tasks)):
+        missing_rows.append('item')
     limit = len(tasks)
     session['limit'] = limit
     session['tasks'] = task_ids
@@ -71,7 +74,8 @@ def main_view():
     if bucket is not None:
         bucket = bucket[0]
         bucket -= 5
-    return render_template('main.html', tasks=tasks, bucket=bucket)
+    return render_template('main.html', tasks=tasks, bucket=bucket, \
+                           missing_rows=missing_rows)
 
 
 @app.route('/get_next_action', methods=['GET', 'POST'])
