@@ -1,55 +1,12 @@
-'''
-    CommandList:
-    A browser-based modeless todo list built with Python3, Flask and sqlite3.
-'''
-
 import os
 from sqlite3 import dbapi2 as sqlite3
 from flask import Flask, request, session, g, redirect, url_for, abort, \
                   render_template, flash
 from datetime import datetime
-from flask_bootstrap import Bootstrap
-
-# CONFIGURE
-app = Flask(__name__)
-bootstrap = Bootstrap(app)
+from db import get_db, close_db
+from config import app
 
 
-# Load default config and override config from an environment variable
-app.config.update(dict(
-    DATABASE=os.path.join(app.root_path, 'commandlist.db')
-    ))
-
-# Set SECRET_KEY in environment
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or 'secret_key'
-# ==============================================================
-
-
-# DATABASE
-def connect_db():
-    '''Connect to the given database.'''
-    rv = sqlite3.connect(app.config['DATABASE'])
-    rv.row_factory = sqlite3.Row
-    return rv
-
-
-def get_db():
-    '''Open a new database connection if there is none yet for the
-    current application context.'''
-    if not hasattr(g, 'sqlite_db'):
-        g.sqlite_db = connect_db()
-    return g.sqlite_db
-
-
-@app.teardown_appcontext
-def close_db(error):
-    '''Close the database again at the end of the request.'''
-    if hasattr(g, 'sqlite_db'):
-        g.sqlite_db.close()
-# ============================================================================
-
-
-# MAIN APP VIEWS AND LOGIC
 @app.route('/')
 def main_view():
     '''Fetch the current user's tasks and calculate the size of the bucket.'''
@@ -206,21 +163,3 @@ def revise():
 @app.route('/how_to')
 def how_to():
     return render_template('how_to.html')
-# ============================================================================
-
-
-# ERROR HANDLERS
-@app.errorhandler(404)
-def page_not_found(e):
-    return render_template('404.html'), 404
-
-
-@app.errorhandler(500)
-def page_not_found(e):
-    return render_template('500.html'), 500
-# ============================================================================
-
-# RUN APP
-if __name__ == '__main__':
-    app.run(debug=True)
-# ============================================================================
