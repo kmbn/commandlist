@@ -113,7 +113,6 @@ def add_task():
     db.execute('insert into tasks (description, creator_id, created_on) \
                values (?, ?, ?)', (next_action, current_user, current_time))
     db.commit()
-    flash('Task added.')
     return redirect(url_for('main_view'))
 
 
@@ -126,7 +125,6 @@ def clear_task():
     db = get_db()
     db.execute('delete from tasks where id = ?', (task_id,))
     db.commit()
-    flash('Task deleted')
     return redirect(url_for('main_view'))
 
 

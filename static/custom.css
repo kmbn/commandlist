@@ -69,7 +69,7 @@ p               { font-size: 2rem;
 
 .btn-default    { font-size: 1.8rem;
                   color: #383636;
-                  font-family: 'futura-pt',Futura,'Open Sans',sans-serif;
+                  font-family: 'Source Code Pro', monospace; }
                 }
 
 .modal-footer   { margin-top: 50px;
