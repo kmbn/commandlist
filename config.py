@@ -7,11 +7,6 @@ app = Flask(__name__)
 bootstrap = Bootstrap(app)
 
 
-# Load default config and override config from an environment variable
-app.config.update(dict(
-    DATABASE=os.path.join(app.root_path, 'commandlist.db')
-    ))
-
-
-# Set SECRET_KEY in environment
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or 'secret_key'
+app.config['DATABASE'] = os.path.join(app.root_path, 'commandlist.db')
+app.config['DEBUG'] = int(os.environ.get('DEBUG'))
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
