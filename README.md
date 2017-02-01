@@ -1,5 +1,5 @@
 # CommandList
-A browser-based modeless todo list built with Python3, Flask and sqlite3.
+A browser-based modeless todo list built with Python 3, Flask and SQLite.
 
 ## Setup
 1. `cd path/to/commandlist`
