@@ -5,15 +5,27 @@ from flask import Flask, request, session, g, redirect, url_for, abort, \
 from datetime import datetime
 from . import app
 from .db import get_db
-from .forms import NextActionForm
+from .forms import NextActionForm, OpenNavForm
 from .decorators import login_required
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def main_view():
     '''Fetch the current user's tasks and calculate the size of the bucket.'''
     if not session.get('logged_in'):
-        return render_template('welcome.html')
+        open_nav = OpenNavForm()
+        if open_nav.validate_on_submit():
+            return parse_open_nav(open_nav)
+        '''if form.validate_on_submit():
+            next_action = form.next_action.data[0].upper() + \
+            form.next_action.data[1:]
+            if next_action == 'Log in':
+                return redirect(url_for('login'))
+            elif next_action == 'Sign up':
+                return redirect(url_for('register'))
+            elif next_action == 'Home':
+                return redirect(url_for('main_view'))'''
+        return render_template('welcome.html', open_nav=open_nav)
     else:
         current_user = session.get('current_user')
         form = NextActionForm()
@@ -44,6 +56,18 @@ def main_view():
             missing_rows=missing_rows, form=form)
 
 
+def parse_open_nav(form):
+    next_action = form.next_action.data[0].upper() + \
+    form.next_action.data[1:]
+    if next_action == 'Log in':
+        return redirect(url_for('login'))
+    elif next_action == 'Sign up':
+        print('sign up')
+        return redirect(url_for('register'))
+    elif next_action == 'Home':
+        return redirect(url_for('main_view'))
+
+
 @app.route('/get_next_action', methods=['GET', 'POST'])
 @login_required
 def get_next_action():
@@ -61,7 +85,6 @@ def get_next_action():
         current_user = session.get('current_user')
         next_action = form.next_action.data[0].upper() + \
             form.next_action.data[1:]
-        print(next_action)
         if next_action[0] == 'C':
             try:
                 int(next_action[1]) == int
@@ -81,6 +104,10 @@ def get_next_action():
             return redirect(url_for('how_to'))
         elif next_action == 'Back':
             return redirect(url_for('main_view'))
+        elif next_action == 'Log out':
+            return redirect(url_for('logout'))
+        elif next_action == 'Account':
+            return redirect(url_for('manage_account'))
         else:
             return add_task(next_action, current_user)
     return redirect(url_for('main_view'))

@@ -9,6 +9,14 @@
     {{ wtf.quick_form(form) }}
 </div>
 
-<p>Forgot your password? <a href="{{ url_for('request_password_reset') }}">[Click here]</a>
+<p>Forgot your password? <a href="{{ url_for('request_password_reset') }}">[Click here]</a></p>
+
+<!--<div>
+    {{ wtf.quick_form(open_nav) }}
+</div>
+</br></br>
+<div>
+    <p>Other options: type "sign up" or "home" and then press enter.</p>
+</div>-->
 
 {% endblock %}

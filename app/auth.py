@@ -6,11 +6,12 @@ from datetime import datetime
 from passlib.context import CryptContext
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from .forms import RegistrationForm, NewEmailForm, LoginForm, \
-    ChangePasswordForm, RequestPasswordResetForm, SetNewPasswordForm
+    ChangePasswordForm, RequestPasswordResetForm, SetNewPasswordForm, \
+    OpenNavForm
 from . import app
 from .db import get_db
 from .mail import send_email
-from .views import main_view
+from .views import main_view, parse_open_nav
 from .decorators import login_required
 
 
@@ -27,6 +28,9 @@ pwd_context = CryptContext(
 
 @app.route('/account/login', methods=['GET', 'POST'])
 def login():
+    open_nav = OpenNavForm()
+    if open_nav.validate_on_submit():
+        return parse_open_nav(open_nav)
     if session.get('logged_in') == True:
         flash('You are already logged in')
         return redirect(url_for('main_view'))
@@ -60,7 +64,7 @@ def login():
         else:
             flash('Sign up for an account first.')
             return redirect(url_for('register'))
-    return render_template('login.html', form=form)
+    return render_template('login.html', form=form, open_nav=open_nav)
 
 
 @app.route('/account/logout')
@@ -75,6 +79,9 @@ def logout():
 
 @app.route('/account/register', methods=['GET', 'POST'])
 def register():
+    open_nav = OpenNavForm()
+    if open_nav.validate_on_submit():
+        return parse_open_nav(open_nav)
     form = RegistrationForm()
     if form.validate_on_submit():
         db = get_db()
@@ -99,7 +106,7 @@ def register():
         flash(Markup('You have been registered and are now logged in. \
             </br>A confirmation has been sent to your email address.'))
         return redirect(url_for('main_view'))
-    return render_template('register.html', form=form)
+    return render_template('register.html', form=form, open_nav=open_nav)
 
 
 # For confirmation

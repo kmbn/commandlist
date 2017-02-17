@@ -51,6 +51,18 @@ class NextActionForm(Form):
     submit = SubmitField('Go!')
 
 
+def allowed(form, field):
+    action = field.data[0].upper() + field.data[1:]
+    if action not in ('Home', 'Log in', 'Sign up'):
+        raise ValidationError('Try "Log in", "Sign up" or "Home".')
+
+
+class OpenNavForm(Form):
+    next_action = StringField('Give it a try:',\
+    validators=[Required(), allowed])
+    submit = SubmitField('Go!')
+
+
 def has_digits(form, field):
     if not bool(re.search(r'\d', field.data)):
         raise ValidationError('Your password must contain at least one \
