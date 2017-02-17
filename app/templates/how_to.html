@@ -13,19 +13,25 @@
             <li><p>(i.e., 'rev3 Clarify how to revise a task')</p></li>
             <li><p>Start from scratch: type reset list</p></li>
         </ol>
-        <h2>Extras tasks go in the bucket.</h2>
+        <h2>Extra tasks go in the bucket.</h2>
     </div>
-    <!--<div class="task-form">
-        <p>Type 'back' to go back to your list:</p>
-        <form action="{{ url_for('get_next_action') }}" method="post">
-            <input class="task" type="text" maxlength="80" name="next_action" autofocus>  <button class="task-button" type="submit">+</button>
+
+    <div class="form">
+        <form class = "task-form" action="{{ url_for('how_to') }}" method="post" role="form">
+            {{ form.hidden_tag() }}
+            <div class="form-group" style="height:55px;"">
+                {{ form.next_action.label }}</br>
+                {{ form.next_action(class="form-control", autocomplete="off", autofocus="autofocus") }}
+                {% if form.next_action.errors %}
+                    {% for error in form.next_action.errors %}
+                        <p style="color:#a94442;">{{ error }}</p>
+                    {% endfor %}
+                {% else %}
+                    <p>Type "back" or click <a href="{{ url_for('main_view') }}">here</a> to return to your list.</p>
+                {% endif %}
+                {{ form.submit(id="submit", class="task-button") }}
+            </div>
         </form>
-    </div>-->
-    <div>
-        {{ wtf.quick_form(form, action=url_for('get_next_action')) }}
-    <div>
-    <div>
-      <p>You can also click <a href="{{ url_for('main_view') }}">here</a> to return to your list.</p>
     </div>
 
 {% endblock %}

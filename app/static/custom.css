@@ -52,10 +52,15 @@ p               { font-size: 2rem;
                   border-bottom: 3px solid #383636;
                   width: 100%; height: 1.5em; }
 
-.task-form      { margin-top: 20px; }
+.task-form      { margin-top: 20px;
+                  margin-bottom: 10px;}
+
+#task-group     { height: 50px; }
 
 .task-button    { font-family: 'Source Code Pro', monospace;
                   font-size: 2em;
+                  height: 1px;
+                  width: 1px;
                   padding-left: 0.1em; padding-right: 0.1em;
                   background: white; visibility: 0; opacity: 0; }
 

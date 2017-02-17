@@ -27,8 +27,10 @@ def main_view():
                 return redirect(url_for('main_view'))'''
         return render_template('welcome.html', open_nav=open_nav)
     else:
-        current_user = session.get('current_user')
         form = NextActionForm()
+        current_user = session.get('current_user')
+        if form.validate_on_submit():
+            return get_next_action(form, current_user)
         db = get_db()
         cur = db.execute('select id, description from tasks \
             where creator_id = ? order by id asc limit 5', (current_user,))
@@ -68,9 +70,7 @@ def parse_open_nav(form):
         return redirect(url_for('main_view'))
 
 
-@app.route('/get_next_action', methods=['GET', 'POST'])
-@login_required
-def get_next_action():
+def get_next_action(form, current_user):
     '''Parse the input and either:
     1. Create a new task (anything that isn't a command)
     2. Delete a task on the list (e.g., 'c2' will delete task number 2)
@@ -80,37 +80,33 @@ def get_next_action():
     5. Redirect the user to a different page (e.g., 'help' will redirect
     to the how-to page; 'back' will redirect to the homepage)
     '''
-    form = NextActionForm()
-    if form.validate_on_submit():
-        current_user = session.get('current_user')
-        next_action = form.next_action.data[0].upper() + \
-            form.next_action.data[1:]
-        if next_action[0] == 'C':
-            try:
-                int(next_action[1]) == int
-            except ValueError:
-                print('huh')
-                return add_task(next_action, current_user)
-            return clear_task(next_action[:2], current_user)
-        elif next_action[:3] == 'Rev':
-            try:
-                int(next_action[3]) == int
-            except ValueError:
-                return add_task(next_action, current_user)
-            return revise(next_action, current_user)
-        elif next_action == 'Reset list':
-            return restart(current_user)
-        elif next_action == 'Help':
-            return redirect(url_for('how_to'))
-        elif next_action == 'Back':
-            return redirect(url_for('main_view'))
-        elif next_action == 'Log out':
-            return redirect(url_for('logout'))
-        elif next_action == 'Account':
-            return redirect(url_for('manage_account'))
-        else:
+    next_action = form.next_action.data[0].upper() + \
+        form.next_action.data[1:]
+    if next_action[0] == 'C':
+        try:
+            int(next_action[1]) == int
+        except ValueError:
+            print('huh')
             return add_task(next_action, current_user)
-    return redirect(url_for('main_view'))
+        return clear_task(next_action[:2], current_user)
+    elif next_action[:3] == 'Rev':
+        try:
+            int(next_action[3]) == int
+        except ValueError:
+            return add_task(next_action, current_user)
+        return revise(next_action, current_user)
+    elif next_action == 'Reset list':
+        return restart(current_user)
+    elif next_action == 'Help':
+        return redirect(url_for('how_to'))
+    elif next_action == 'Back':
+        return redirect(url_for('main_view'))
+    elif next_action == 'Log out':
+        return redirect(url_for('logout'))
+    elif next_action == 'Account':
+        return redirect(url_for('manage_account'))
+    else:
+        return add_task(next_action, current_user)
 
 
 def add_task(next_action, current_user):
@@ -159,8 +155,11 @@ def revise(next_action, current_user):
     return redirect(url_for('main_view'))
 
 
-@app.route('/how_to')
+@app.route('/how_to', methods=['GET', 'POST'])
 @login_required
 def how_to():
     form = NextActionForm()
+    current_user = session.get('current_user')
+    if form.validate_on_submit():
+        return get_next_action(form, current_user)
     return render_template('how_to.html', form=form)

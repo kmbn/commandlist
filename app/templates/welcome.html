@@ -17,12 +17,22 @@
     <h2><a href="{{ url_for('login') }}">Log in</a> or <a href="{{ url_for('register') }}">create an account</a>.</h2>
 </div>
 
-<div>
-    {{ wtf.quick_form(open_nav) }}
-</div>
-
-<div>
-  <p>Type "sign up" or "log in" and then press enter.</p>
+<div class="form">
+    <form class = "task-form" action="{{ url_for('main_view') }}" method="post" role="form">
+        {{ open_nav.hidden_tag() }}
+        <div class="form-group" style="height:55px;"">
+            {{ open_nav.next_action.label }}</br>
+            {{ open_nav.next_action(class="form-control", autocomplete="off", autofocus="autofocus") }}
+            {% if open_nav.next_action.errors %}
+                {% for error in open_nav.next_action.errors %}
+                    <p style="color:#a94442;">{{ error }}</p>
+                {% endfor %}
+            {% else %}
+                <p>Type "sign up" or "log in" and then press enter.</p>
+            {% endif %}
+            {{ open_nav.submit(id="submit", class="task-button") }}
+        </div>
+    </form>
 </div>
 
 {% endblock %}
