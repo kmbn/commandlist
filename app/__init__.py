@@ -7,9 +7,8 @@ app = Flask(__name__)
 bootstrap = Bootstrap(app)
 
 
-app.config['DATABASE'] = os.path.join(app.root_path, 'commandlist.db')
-app.config['DEBUG'] = int(os.environ.get('DEBUG'))
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+# export FLASK_CONFIG_FILE=default.cfg for default settings (no email)
+app.config.from_envvar('FLASK_CONFIG_FILE')
 
 
 from .views import *
