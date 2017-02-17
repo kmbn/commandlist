@@ -27,9 +27,18 @@
                 <a class="navbar-brand" href="/">CommandList</a>
             </div>
             <div class="navbar-collapse collapse">
+                {% if session.logged_in %}
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="{{ url_for('how_to') }}">How-to</a></li>
+                    <li><a href="{{ url_for('manage_account') }}">Account</a></li>
+                    <li><a href="{{ url_for('logout') }}">Log out</a></li>
                 </ul>
+                {% else %}
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="{{ url_for('login') }}">Log in</a></li>
+                    <li><a href="{{ url_for('register') }}">Sign up!</a></li>
+                </ul>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -65,6 +74,7 @@
 
     {% block scripts%}
     {{super()}}
+    <script src="{{ url_for('static', filename='custom.js') }}"></script>
     {% endblock %}
 
 </div>

@@ -13,4 +13,5 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 
 
 from .views import *
+from .auth import *
 from .errors import *

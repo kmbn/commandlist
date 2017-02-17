@@ -1,9 +1,9 @@
 drop table if exists users;
 create table users (
   id integer primary key autoincrement,
-  email varchar not null unique,
-  password varchar not null,
-  role varchar not null,
+  email varchar,
+  password varchar,
+  role varchar,
   joined_on varchar,
   status varchar,
   confirmed_on varchar

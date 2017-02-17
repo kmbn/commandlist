@@ -3,44 +3,49 @@ from sqlite3 import dbapi2 as sqlite3
 from flask import Flask, request, session, g, redirect, url_for, abort, \
                   render_template, flash
 from datetime import datetime
-from .db import get_db, close_db
 from . import app
+from .db import get_db
 from .forms import NextActionForm
+from .decorators import login_required
 
 
 @app.route('/')
 def main_view():
     '''Fetch the current user's tasks and calculate the size of the bucket.'''
-    current_user = 1
-    form = NextActionForm()
-    db = get_db()
-    cur = db.execute('select id, description from tasks where creator_id = ? \
-                     order by id asc limit 5', (current_user,))
-    tasks = cur.fetchall()
-    if tasks is None:
-        tasks = []
+    if not session.get('logged_in'):
+        return render_template('welcome.html')
     else:
-        task_ids = []
-        for row in tasks:
-            task_ids.append(row[0])
-    missing_rows = [] # Create placeholders for formatting based on five items
-    for i in range(5 - len(tasks)):
-        missing_rows.append('item')
-    limit = len(tasks) # Necessary for parsing input in get_next_action
-    session['limit'] = limit
-    session['task_ids'] = task_ids
-    db = get_db()
-    cur = db.execute('select count(id) from tasks where creator_id = ?', \
-                     (current_user,))
-    bucket = cur.fetchone()
-    if bucket is not None:
-        bucket = bucket[0]
-        bucket -= 5
-    return render_template('main.html', tasks=tasks, bucket=bucket, \
-                           missing_rows=missing_rows, form=form)
+        current_user = session.get('current_user')
+        form = NextActionForm()
+        db = get_db()
+        cur = db.execute('select id, description from tasks \
+            where creator_id = ? order by id asc limit 5', (current_user,))
+        tasks = cur.fetchall()
+        if tasks is None:
+            tasks = []
+        else:
+            task_ids = []
+            for row in tasks:
+                task_ids.append(row[0])
+        missing_rows = [] # Create placeholders for formatting based on five items
+        for i in range(5 - len(tasks)):
+            missing_rows.append('item')
+        limit = len(tasks) # Necessary for parsing input in get_next_action
+        session['limit'] = limit
+        session['task_ids'] = task_ids
+        db = get_db()
+        cur = db.execute('select count(id) from tasks where creator_id = ?', \
+                         (current_user,))
+        bucket = cur.fetchone()
+        if bucket is not None:
+            bucket = bucket[0]
+            bucket -= 5
+        return render_template('main.html', tasks=tasks, bucket=bucket, \
+            missing_rows=missing_rows, form=form)
 
 
 @app.route('/get_next_action', methods=['GET', 'POST'])
+@login_required
 def get_next_action():
     '''Parse the input and either:
     1. Create a new task (anything that isn't a command)
@@ -53,65 +58,36 @@ def get_next_action():
     '''
     form = NextActionForm()
     if form.validate_on_submit():
-        next_action = form.next_action.data[0].upper() + form.next_action.data[1:]
+        current_user = session.get('current_user')
+        next_action = form.next_action.data[0].upper() + \
+            form.next_action.data[1:]
         print(next_action)
         if next_action[0] == 'C':
             try:
                 int(next_action[1]) == int
             except ValueError:
                 print('huh')
-                return add_task(next_action)
-            return clear_task(next_action[:2])
+                return add_task(next_action, current_user)
+            return clear_task(next_action[:2], current_user)
         elif next_action[:3] == 'Rev':
             try:
                 int(next_action[3]) == int
             except ValueError:
-                return add_task(next_action)
-            return revise(next_action)
+                return add_task(next_action, current_user)
+            return revise(next_action, current_user)
         elif next_action == 'Reset list':
-            return restart()
+            return restart(current_user)
         elif next_action == 'Help':
             return redirect(url_for('how_to'))
         elif next_action == 'Back':
             return redirect(url_for('main_view'))
         else:
-            return add_task(next_action)
+            return add_task(next_action, current_user)
     return redirect(url_for('main_view'))
 
-'''
-    if next_action[0] == 'C':
-        try:
-            int(next_action[1]) == int
-        except ValueError:
-            return check_task() # Check task is now part of the validation
-        if 0 < int(next_action[1]) <= limit:
-            return clear_task()
-        elif int(next_action[1]) > limit:
-            flash('You can only clear tasks 1-%d.' % (limit))
-            return redirect(url_for('main_view'))
-    elif next_action == 'Reset list':
-        return restart()
-    elif next_action[:3] == 'Rev':
-        try:
-            int(next_action[3]) == int
-        except ValueError:
-            return check_task()  # Check task is now part of the validation
-        if 0 < int(next_action[3]) <= limit:
-            return revise()
-        elif int(next_action[3]) > limit:
-            flash('You can only revise tasks 1-%d.' % (limit))
-            return redirect(url_for('main_view'))
-    elif next_action == 'Help':
-        return redirect(url_for('how_to'))
-    elif next_action == 'Back' or next_action == "'back'":
-        return redirect(url_for('main_view'))
-    else:
-        return check_task()  # Check task is now part of the validation
-'''
 
-def add_task(next_action):
+def add_task(next_action, current_user):
     '''Add the task to the task table.'''
-    current_user = 1
     current_time = datetime.utcnow()
     db = get_db()
     db.execute('insert into tasks (description, creator_id, created_on) \
@@ -120,20 +96,20 @@ def add_task(next_action):
     return redirect(url_for('main_view'))
 
 
-def clear_task(next_action):
+def clear_task(next_action, current_user):
     '''Delete the task from the task table.'''
     task_ids = session.get('task_ids')
     task_number = int(next_action[1])
     task_id = task_ids[task_number-1]
     db = get_db()
-    db.execute('delete from tasks where id = ?', (task_id,))
+    db.execute('delete from tasks where id = ? and creator_id = ?', \
+        (task_id, current_user))
     db.commit()
     return redirect(url_for('main_view'))
 
 
-def restart():
+def restart(current_user):
     '''Erase all tasks for the given user and start a fresh list.'''
-    current_user = 1
     db = get_db()
     db.execute('delete from tasks where creator_id = ?', (current_user,))
     db.commit()
@@ -141,7 +117,7 @@ def restart():
     return redirect(url_for('main_view'))
 
 
-def revise(next_action):
+def revise(next_action, current_user):
     '''Revise the given task (indicated by index[3] of the input).
     All text from index[5] onward is considered to be the new content
     of the task.'''
@@ -150,13 +126,14 @@ def revise(next_action):
     task_id = task_ids[task_number-1]
     new_task = next_action[4:]
     db = get_db()
-    db.execute('update tasks set description = ? where id = ?', \
-               (new_task, task_id))
+    db.execute('update tasks set description = ? where id = ? \
+        and creator_id = ?', (new_task, task_id, creator_id))
     db.commit()
     return redirect(url_for('main_view'))
 
 
 @app.route('/how_to')
+@login_required
 def how_to():
     form = NextActionForm()
     return render_template('how_to.html', form=form)

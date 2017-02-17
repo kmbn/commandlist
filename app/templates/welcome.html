@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block page_content %}
+
+<div class="page-header">
+    <h1>>_Welcome<h1>
+</div>
+
+<div>
+    <h2>CommandList is a quick, keyboard command-only todo list.</h2>
+    <p><a href="{{ url_for('login') }}">Log in</a> or <a href="{{ url_for('register') }}">create an account</a>.</p>
+</div>
+
+{% endblock %}

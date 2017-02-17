@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block page_content %}
+
+<div class="page-header">
+    <h1>Login</h1>
+</div>
+
+<div>
+    {{ wtf.quick_form(form) }}
+</div>
+
+<p>Forgot your password? <a href="{{ url_for('request_password_reset') }}">[Click here]</a>
+
+{% endblock %}
