@@ -1,5 +1,5 @@
 import re
-from flask import session
+from flask import session, Markup
 from flask_wtf import Form
 from wtforms import StringField, PasswordField, SubmitField, ValidationError
 from wtforms.validators import Required, Length, Email, EqualTo
@@ -31,7 +31,7 @@ def check_revise(form, field):
         if int(field.data[3]) > limit:
             raise ValidationError('You can only revise tasks 1-%d.' % (limit))
         if len(field.data) < 5:
-            raise ValidationError('Enter the revision like "rev3 new task".')
+            raise ValidationError(Markup('Enter the revision like <code>rev3 new task</code>.'))
 
 
 def check_dupe(form, field):
@@ -54,7 +54,7 @@ class NextActionForm(Form):
 def allowed(form, field):
     action = field.data[0].upper() + field.data[1:]
     if action not in ('Home', 'Log in', 'Sign up'):
-        raise ValidationError('Try "Log in", "Sign up" or "Home".')
+        raise ValidationError(Markup('Try <code>log in</code>, <code>sign up</code> or <code>Home</code>.'))
 
 
 class OpenNavForm(Form):

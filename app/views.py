@@ -147,10 +147,10 @@ def revise(next_action, current_user):
     task_ids = session.get('task_ids')
     task_number = int(next_action[3])
     task_id = task_ids[task_number-1]
-    new_task = next_action[4:]
+    new_task = next_action[5].upper() + next_action[6:]
     db = get_db()
     db.execute('update tasks set description = ? where id = ? \
-        and creator_id = ?', (new_task, task_id, creator_id))
+        and creator_id = ?', (new_task, task_id, current_user))
     db.commit()
     return redirect(url_for('main_view'))
 

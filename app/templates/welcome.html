@@ -6,7 +6,7 @@
 </div>
 
 <div>
-    <h2>CommandList is a keyboard-friendly to-do list</h2>
+    <h2>CommandList is no-click to-do list:</h2>
     <ul>
         <li><p>Add tasks by just typing</p></li>
         <li><p>Delete or revise them with keyboard shortcuts</p></li>
@@ -28,7 +28,7 @@
                     <p style="color:#a94442;">{{ error }}</p>
                 {% endfor %}
             {% else %}
-                <p>Type "sign up" or "log in" and then press enter.</p>
+                <p>Type <code>sign up</code> or <code>log in</code> and then press enter.</p>
             {% endif %}
             {{ open_nav.submit(id="submit", class="task-button") }}
         </div>
