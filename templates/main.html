@@ -2,13 +2,14 @@
 
 {% block page_content %}
     <div class="page-header">
-        <h1>_>List</h1>
+        <h1>>_List</h1>
     </div>
     <div>
         {% if tasks|length == 0 %}
             <h2>Your todo list is empty.</h2>
         {% else %}
             <h2>Your current todo list is:</h2>
+        {% endif %}
             <ol>
             {% for task in tasks %}
                 <li><p>{{ task[1] }}</p></li>
@@ -21,7 +22,6 @@
                 {% endfor %}
                 </ol>
             {% endif %}
-        {% endif %}
         {% if bucket == 1 %}
             <h2>There is one more task in your bucket.</h2>
         {% elif bucket > 1 %}
