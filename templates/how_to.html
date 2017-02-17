@@ -15,12 +15,15 @@
         </ol>
         <h2>Extras tasks go in the bucket.</h2>
     </div>
-    <div class="task-form">
+    <!--<div class="task-form">
         <p>Type 'back' to go back to your list:</p>
         <form action="{{ url_for('get_next_action') }}" method="post">
             <input class="task" type="text" maxlength="80" name="next_action" autofocus>  <button class="task-button" type="submit">+</button>
         </form>
-    </div>
+    </div>-->
+    <div>
+        {{ wtf.quick_form(form, action=url_for('get_next_action')) }}
+    <div>
     <div>
       <p>You can also click <a href="{{ url_for('main_view') }}">here</a> to return to your list.</p>
     </div>
