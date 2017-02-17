@@ -1,7 +1,7 @@
 import os
 from sqlite3 import dbapi2 as sqlite3
 from flask import g
-from config import app
+from . import app
 
 
 def connect_db():

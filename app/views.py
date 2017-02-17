@@ -3,9 +3,9 @@ from sqlite3 import dbapi2 as sqlite3
 from flask import Flask, request, session, g, redirect, url_for, abort, \
                   render_template, flash
 from datetime import datetime
-from db import get_db, close_db
-from config import app
-from forms import NextActionForm
+from .db import get_db, close_db
+from . import app
+from .forms import NextActionForm
 
 
 @app.route('/')

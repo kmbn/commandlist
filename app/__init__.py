@@ -10,3 +10,7 @@ bootstrap = Bootstrap(app)
 app.config['DATABASE'] = os.path.join(app.root_path, 'commandlist.db')
 app.config['DEBUG'] = int(os.environ.get('DEBUG'))
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+
+
+from .views import *
+from .errors import *

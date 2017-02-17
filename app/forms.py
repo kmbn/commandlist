@@ -2,7 +2,7 @@ from flask import session
 from flask_wtf import Form
 from wtforms import StringField, SubmitField, ValidationError
 from wtforms.validators import Required, Length, Email
-from db import get_db
+from .db import get_db
 
 
 # Custom validators
