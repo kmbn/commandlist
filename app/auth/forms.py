@@ -29,10 +29,11 @@ def is_new_user(form, field):
 
 
 class RegistrationForm(Form):
-    email = StringField('Enter your email:', \
+    email = StringField('Enter your email: (required)', \
         validators=[Required(), is_new_user, Length(1, 64), Email()])
-    password = PasswordField('Create a password:', \
-        validators=[Required(), has_digits, has_special_char, Length(1, 64)])
+    password = PasswordField('Create a password: \
+        (min 8 char., must incl. a number and a special character)', \
+        validators=[Required(), has_digits, has_special_char, Length(min=8)])
     submit = SubmitField('Create account')
 
 
@@ -80,9 +81,10 @@ class NewEmailForm(Form):
 
 class ChangePasswordForm(Form):
     current_password = PasswordField('Your current password:', \
-        validators=[Required(), Length(1, 64)])
-    new_password = PasswordField('Your new password:', \
-        validators=[Required(), Length(1, 64), has_digits, \
+        validators=[Required()])
+    new_password = PasswordField('Your new password: \
+        (min 8 char., must incl. a number and a special character)', \
+        validators=[Required(), Length(min=8), has_digits, \
         has_special_char, EqualTo('verify_password', \
         message='New passwords must match.')])
     verify_password = PasswordField('Re-enter new password:', \
@@ -97,8 +99,9 @@ class RequestPasswordResetForm(Form):
 
 
 class SetNewPasswordForm(Form):
-    new_password = PasswordField('Your new password:', \
-        validators=[Required(), Length(1, 64), has_digits, has_special_char, \
+    new_password = PasswordField('Your new password: \
+        (min 8 char., must incl. a number and a special character)', \
+        validators=[Required(), Length(min=8), has_digits, has_special_char, \
         EqualTo('verify_password', \
         message='Passwords must match')])
     verify_password = PasswordField('Re-enter new password:', \
