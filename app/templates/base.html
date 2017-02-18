@@ -37,14 +37,14 @@ type="image/x-icon">
             <div class="navbar-collapse collapse">
                 {% if session.logged_in %}
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="{{ url_for('how_to') }}">How-to</a></li>
-                    <li><a href="{{ url_for('manage_account') }}">Account</a></li>
-                    <li><a href="{{ url_for('logout') }}">Log out</a></li>
+                    <li><a href="{{ url_for('main.how_to') }}">How-to</a></li>
+                    <li><a href="{{ url_for('auth.manage_account') }}">Account</a></li>
+                    <li><a href="{{ url_for('auth.logout') }}">Log out</a></li>
                 </ul>
                 {% else %}
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="{{ url_for('login') }}">Log in</a></li>
-                    <li><a href="{{ url_for('register') }}">Sign up!</a></li>
+                    <li><a href="{{ url_for('auth.login') }}">Log in</a></li>
+                    <li><a href="{{ url_for('auth.register') }}">Sign up!</a></li>
                 </ul>
                 {% endif %}
             </div>

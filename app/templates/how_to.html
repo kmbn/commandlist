@@ -17,7 +17,7 @@
     </div>
 
     <div class="form">
-        <form class = "task-form" action="{{ url_for('how_to') }}" method="post" role="form">
+        <form class = "task-form" action="{{ url_for('main.how_to') }}" method="post" role="form">
             {{ form.hidden_tag() }}
             <div class="form-group" style="height:55px;"">
                 {{ form.next_action.label }}</br>
@@ -27,7 +27,7 @@
                         <p style="color:#a94442;">{{ error }}</p>
                     {% endfor %}
                 {% else %}
-                    <p>Type "back" or click <a href="{{ url_for('main_view') }}">here</a> to return to your list.</p>
+                    <p>Type "back" or click <a href="{{ url_for('main.main_view') }}">here</a> to return to your list.</p>
                 {% endif %}
                 {{ form.submit(id="submit", class="task-button") }}
             </div>

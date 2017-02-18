@@ -1,30 +1,21 @@
 import os
 from sqlite3 import dbapi2 as sqlite3
 from flask import Flask, request, session, g, redirect, url_for, abort, \
-                  render_template, flash
+                  render_template, flash, Blueprint
 from datetime import datetime
-from . import app
-from .db import get_db
+from . import main
+from app.db import get_db
 from .forms import NextActionForm, OpenNavForm
-from .decorators import login_required
+from app.decorators import login_required
 
 
-@app.route('/', methods=['GET', 'POST'])
+@main.route('/', methods=['GET', 'POST'])
 def main_view():
     '''Fetch the current user's tasks and calculate the size of the bucket.'''
     if not session.get('logged_in'):
         open_nav = OpenNavForm()
         if open_nav.validate_on_submit():
             return parse_open_nav(open_nav)
-        '''if form.validate_on_submit():
-            next_action = form.next_action.data[0].upper() + \
-            form.next_action.data[1:]
-            if next_action == 'Log in':
-                return redirect(url_for('login'))
-            elif next_action == 'Sign up':
-                return redirect(url_for('register'))
-            elif next_action == 'Home':
-                return redirect(url_for('main_view'))'''
         return render_template('welcome.html', open_nav=open_nav)
     else:
         form = NextActionForm()
@@ -62,12 +53,12 @@ def parse_open_nav(form):
     next_action = form.next_action.data[0].upper() + \
     form.next_action.data[1:]
     if next_action == 'Log in':
-        return redirect(url_for('login'))
+        return redirect(url_for('auth.login'))
     elif next_action == 'Sign up':
         print('sign up')
-        return redirect(url_for('register'))
+        return redirect(url_for('auth.register'))
     elif next_action == 'Home':
-        return redirect(url_for('main_view'))
+        return redirect(url_for('main.main_view'))
 
 
 def get_next_action(form, current_user):
@@ -98,13 +89,13 @@ def get_next_action(form, current_user):
     elif next_action == 'Reset list':
         return restart(current_user)
     elif next_action == 'Help':
-        return redirect(url_for('how_to'))
+        return redirect(url_for('main.how_to'))
     elif next_action == 'Back':
-        return redirect(url_for('main_view'))
+        return redirect(url_for('main.main_view'))
     elif next_action == 'Log out':
-        return redirect(url_for('logout'))
+        return redirect(url_for('auth.logout'))
     elif next_action == 'Account':
-        return redirect(url_for('manage_account'))
+        return redirect(url_for('auth.manage_account'))
     else:
         return add_task(next_action, current_user)
 
@@ -116,7 +107,7 @@ def add_task(next_action, current_user):
     db.execute('insert into tasks (description, creator_id, created_on) \
                values (?, ?, ?)', (next_action, current_user, current_time))
     db.commit()
-    return redirect(url_for('main_view'))
+    return redirect(url_for('main.main_view'))
 
 
 def clear_task(next_action, current_user):
@@ -128,7 +119,7 @@ def clear_task(next_action, current_user):
     db.execute('delete from tasks where id = ? and creator_id = ?', \
         (task_id, current_user))
     db.commit()
-    return redirect(url_for('main_view'))
+    return redirect(url_for('main.main_view'))
 
 
 def restart(current_user):
@@ -137,7 +128,7 @@ def restart(current_user):
     db.execute('delete from tasks where creator_id = ?', (current_user,))
     db.commit()
     flash('To do list and bucket emptied – enjoy your fresh start!')
-    return redirect(url_for('main_view'))
+    return redirect(url_for('main.main_view'))
 
 
 def revise(next_action, current_user):
@@ -152,10 +143,10 @@ def revise(next_action, current_user):
     db.execute('update tasks set description = ? where id = ? \
         and creator_id = ?', (new_task, task_id, current_user))
     db.commit()
-    return redirect(url_for('main_view'))
+    return redirect(url_for('main.main_view'))
 
 
-@app.route('/how_to', methods=['GET', 'POST'])
+@main.route('how_to', methods=['GET', 'POST'])
 @login_required
 def how_to():
     form = NextActionForm()

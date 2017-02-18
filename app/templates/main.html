@@ -31,7 +31,7 @@
         {% endif %}
     </div>
     <div class="form">
-        <form class = "task-form" action="{{ url_for('main_view') }}" method="post" role="form">
+        <form class = "task-form" action="{{ url_for('main.main_view') }}" method="post" role="form">
             {{ form.hidden_tag() }}
             <div class="form-group" style="height:55px;"">
                 {{ form.next_action.label }}</br>
@@ -41,7 +41,7 @@
                         <p style="color:#a94442;">{{ error }}</p>
                     {% endfor %}
                 {% else %}
-                    <p>Type <code>help</code> or click <a href="{{ url_for('how_to') }}">here</a> to view a list of commands.</p>
+                    <p>Type <code>help</code> or click <a href="{{ url_for('main.how_to') }}">here</a> to view a list of commands.</p>
                 {% endif %}
                 {{ form.submit(id="submit", class="task-button") }}
             </div>
