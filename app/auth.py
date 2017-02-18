@@ -8,22 +8,11 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from .forms import RegistrationForm, NewEmailForm, LoginForm, \
     ChangePasswordForm, RequestPasswordResetForm, SetNewPasswordForm, \
     OpenNavForm
-from . import app
+from . import app, pwd_context
 from .db import get_db
 from .mail import send_email
 from .views import main_view, parse_open_nav
 from .decorators import login_required
-
-
-# Passlib config:
-pwd_context = CryptContext(
-    # Replace this list with the hash(es) you wish to support.
-    # The first hash will be the default
-    schemes=["pbkdf2_sha256"]
-    # Optionally, set the number of rounds that should be used.
-    # Leaving this alone is usually safe, and will use passlib's defaults.
-    ## pbkdf2_sha256__rounds = 29000,
-    )
 
 
 @app.route('/account/login', methods=['GET', 'POST'])

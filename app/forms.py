@@ -4,7 +4,7 @@ from flask_wtf import Form
 from wtforms import StringField, PasswordField, SubmitField, ValidationError
 from wtforms.validators import Required, Length, Email, EqualTo
 from .db import get_db
-
+from . import pwd_context
 
 # Custom validators
 
@@ -91,10 +91,36 @@ class RegistrationForm(Form):
     submit = SubmitField('Create account')
 
 
+class PasswordCorrect(object):
+    '''Verify email/password combo before validating form.'''
+    def __init__(self, fieldname):
+        self.fieldname = fieldname
+
+    def __call__(self, form, field):
+        try:
+            email = form[self.fieldname]
+        except KeyError:
+            raise ValidationError(field.gettext("Invalid field name '%s'.") \
+                % self.fieldname)
+        db = get_db()
+        cur = db.execute('select password from users \
+            where email is ?', (email.data,))
+        row = cur.fetchone()
+        if row is not None:
+            db_password = row[0]
+            if not pwd_context.verify(field.data, db_password):
+                raise ValidationError('The email or password you entered \
+                    were not found.')
+        else:
+            raise ValidationError('Could not log in—\
+                have you already registered?.')
+
+
 class LoginForm(Form):
     email = StringField('Email address:', \
         validators=[Required(), Length(1, 64), Email()])
-    password = PasswordField('Password:', validators=[Required()])
+    password = PasswordField('Password:', validators=[Required(), \
+        PasswordCorrect('email')])
     submit = SubmitField('Log in')
 
 
