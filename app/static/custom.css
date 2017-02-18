@@ -18,6 +18,9 @@ p               { font-size: 2rem;
                   color: #383636;
                   font-family: 'Source Code Pro', monospace; }
 
+.message        { font-size: 1.8rem;
+                  font-family: 'Source Code Pro', monospace; }
+
 .hidden-list    { background: white; opacity: 0; visibility: 0;}
 
 .navbar-inverse { border-radius: 0 !important;
