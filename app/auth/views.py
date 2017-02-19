@@ -34,7 +34,10 @@ def login():
                 Click <a href="%s">here</a> \
                 if you need a new confirmation link.' % \
                 (url_for('auth.resend_confirmation'))))
-        return redirect(request.args.get('next') or url_for('main.main_view'))
+        if request.args.get('next'):
+            return redirect(request.args.get('next'))
+        else:
+            return redirect(url_for('main.main_view'))
     return render_template('login.html', form=form)
 
 
@@ -44,7 +47,7 @@ def logout():
     session.pop('logged_in', None)
     session.pop('current_user', None)
     session.pop('status', None)
-    flash('You were logged out')
+    flash('You have been logged out.')
     return redirect(url_for('main.main_view'))
 
 
