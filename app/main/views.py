@@ -52,10 +52,9 @@ def main_view():
 def parse_open_nav(form):
     next_action = form.next_action.data[0].upper() + \
     form.next_action.data[1:]
-    if next_action == 'Log in':
+    if next_action == 'Log in' or next_action == 'Login':
         return redirect(url_for('auth.login'))
-    elif next_action == 'Sign up':
-        print('sign up')
+    elif next_action == 'Sign up' or next_action == 'Signup':
         return redirect(url_for('auth.register'))
     elif next_action == 'Home':
         return redirect(url_for('main.main_view'))

@@ -27,7 +27,7 @@
                         <p style="color:#a94442;">{{ error }}</p>
                     {% endfor %}
                 {% else %}
-                    <p>Type "back" or click <a href="{{ url_for('main.main_view') }}">here</a> to return to your list.</p>
+                    <p>Type <code>back</code> or click <a href="{{ url_for('main.main_view') }}">here</a> to return to your list.</p>
                 {% endif %}
                 {{ form.submit(id="submit", class="task-button") }}
             </div>
