@@ -233,8 +233,8 @@ def request_password_reset():
             token = generate_confirmation_token(user_id)
             send_email(email, 'Link to reset your password',
                        'email/reset_password', token=token)
-            flash('A link to reset your password has been sent')
-            return redirect(url_for('main.main_view'))
+            flash('A link to reset your password has been sent.')
+            return redirect(url_for('auth.login'))
         else:
             flash('That email is not registered')
             return redirect(url_for('auth.request_password_reset'))
